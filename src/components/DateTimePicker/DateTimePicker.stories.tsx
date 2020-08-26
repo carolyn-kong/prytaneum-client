@@ -12,7 +12,7 @@ export default {
 export function DateTimePicker() {
     return (
         <ThemeProvider theme={theme}>
-            <Component/>
+            <Component id='test' value='test' onChange={() => {}}/>
         </ThemeProvider>
     );
 }

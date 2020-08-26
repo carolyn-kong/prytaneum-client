@@ -60,8 +60,12 @@ describe('RegisterForm', () => {
     });
 
     it('should submit and succeed', async () => {
+        // setup
+
+        // props
         const onSuccess = jest.fn();
         const onFailure = jest.fn();
+        
         const resolvedVal = { status: 200 };
         const spy = jest
             .spyOn(API, 'register')
@@ -70,10 +74,11 @@ describe('RegisterForm', () => {
             username: 'username',
             email: 'email@email.com',
             password: 'password',
-            confirmPass: 'password',
+            confirmPassword: 'password',
         };
         jest.useFakeTimers();
 
+        // render
         ReactTestUtils.act(() => {
             render(
                 <RegisterForm onSuccess={onSuccess} onFailure={onFailure} />,
@@ -81,6 +86,7 @@ describe('RegisterForm', () => {
             );
         });
 
+        // grab input fields from form
         const usernameNode = document.querySelector('#username') as HTMLElement;
         const emailNode = document.querySelector('#email') as HTMLElement;
         const passwordNode = document.querySelector('#password') as HTMLElement;
@@ -89,6 +95,7 @@ describe('RegisterForm', () => {
         ) as HTMLElement;
         const button = document.querySelector('[type="submit"]') as HTMLElement;
 
+        // modify input fields in the DOM
         ReactTestUtils.act(() => {
             ReactTestUtils.Simulate.change(usernameNode, {
                 target: ({ value: form.username } as unknown) as EventTarget,
@@ -100,14 +107,17 @@ describe('RegisterForm', () => {
                 target: ({ value: form.password } as unknown) as EventTarget,
             });
             ReactTestUtils.Simulate.change(confirmNode, {
-                target: ({ value: form.confirmPass } as unknown) as EventTarget,
+                target: ({ value: form.confirmPassword } as unknown) as EventTarget,
             });
             button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
         });
 
+        // make sure the external API gets called 
         expect(spy).toBeCalledWith(form);
+        // make sure all timers run
         jest.runAllTimers();
 
+        // wait for any async results to resolve
         await ReactTestUtils.act(async () => {
             await Promise.allSettled(spy.mock.results);
         });
@@ -125,7 +135,7 @@ describe('RegisterForm', () => {
             username: 'username',
             email: 'email@email.com',
             password: 'password',
-            confirmPass: 'password',
+            confirmPassword: 'password',
         };
         jest.useFakeTimers();
 
@@ -155,7 +165,7 @@ describe('RegisterForm', () => {
                 target: ({ value: form.password } as unknown) as EventTarget,
             });
             ReactTestUtils.Simulate.change(confirmNode, {
-                target: ({ value: form.confirmPass } as unknown) as EventTarget,
+                target: ({ value: form.confirmPassword } as unknown) as EventTarget,
             });
             button.dispatchEvent(new MouseEvent('click', { bubbles: true }));
         });

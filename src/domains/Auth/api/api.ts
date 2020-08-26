@@ -60,6 +60,15 @@ export async function forgotPassReset(
     });
 }
 
+interface ForgotPassRequestForm {
+    email: string;
+}
+
+/** Function to request a password reset
+ *  @category Domains/Auth
+ *  @constructor forgotPassRequest
+ *  @param {ForgotPassForm} form the form to submit the reset through
+*/
 export async function forgotPassRequest(form: AuthTypes.ForgotPassRequestForm) {
     if (!form.email) {
         throw errors.fieldError();
@@ -71,6 +80,18 @@ export async function forgotPassRequest(form: AuthTypes.ForgotPassRequestForm) {
     return axios.post('/api/users/request-password-reset', { form });
 }
 
+interface RegisterForm {
+    username?: string;
+    password?: string;
+    email?: string;
+    confirmPassword?: string;
+}
+
+/** Function to register a new user, pulls the data from the form, checks if its valid, then returns either a POST, or an error if something is invalid
+ *  @category Domains/Auth
+ *  @constructor register
+ *  @param {RegisterForm} form the form to submit the new user registration through
+*/
 export async function register(form: AuthTypes.RegisterForm) {
     const { username, password, email, confirmPassword } = form;
 
