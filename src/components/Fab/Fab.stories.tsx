@@ -1,22 +1,22 @@
 import React from 'react';
-import { MemoryRouter } from 'react-router-dom'
+import AddIcon from '@material-ui/icons/Add';
 
 import Component from './Fab';
-import theme from 'theme';
 
-export default { 
+export default {
     title: 'Components/Fab',
-    component: Component 
+    component: Component,
 };
 
 const onClick = () => {
-    alert("onClick works");
+    // eslint-disable-next-line no-alert
+    alert('onClick works');
 };
 
 export function FabButton() {
     return (
-        <MemoryRouter initialEntries={['/']}>
-            <Component onClick={onClick} />
-        </MemoryRouter>
+        <Component onClick={onClick}>
+            <AddIcon />
+        </Component>
     );
 }

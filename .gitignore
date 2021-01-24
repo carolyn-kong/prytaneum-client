@@ -33,4 +33,7 @@ build
 *.tar.gz
 
 # docs
-docs/
+docs/html
+
+# github actions
+.secrets

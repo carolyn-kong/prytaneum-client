@@ -1,10 +1,9 @@
 import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import ReactTestUtils from 'react-dom/test-utils';
+import ThemeProvider from 'contexts/Theme';
 
 import Loader from './Loader';
-import { ThemeProvider } from '@material-ui/core';
-import theme from 'theme';
 
 describe('Loader', () => {
     let container: HTMLDivElement | null = null;
@@ -29,9 +28,9 @@ describe('Loader', () => {
     it('should render', () => {
         ReactTestUtils.act(() => {
             render(
-                <ThemeProvider theme={theme}>
+                <ThemeProvider>
                     <div id='test'>
-                        <Loader/>
+                        <Loader />
                     </div>
                 </ThemeProvider>,
                 container

@@ -5,7 +5,7 @@ import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
     root: {
-        height: '100%',
+        // height: '100%',
         width: '100%',
         // overflowY: 'scroll'
     },
@@ -15,6 +15,7 @@ const useStyles = makeStyles({
 });
 
 interface Props {
+    id?: string;
     children: JSX.Element | JSX.Element[];
 }
 
@@ -22,16 +23,20 @@ interface Props {
  *  @category Component
  *  @constructor MessageList
  *  @param props
- *  @param {JSX.Element | JSX.Element[]} props.children JSX elements to list out on the page; for example, using MessageListItems 
-*/
-export default function MessageList({ children }: Props) {
+ *  @param {JSX.Element | JSX.Element[]} props.children JSX elements to list out on the page; for example, using MessageListItems
+ */
+export default function MessageList({ id, children }: Props) {
     const classes = useStyles();
     return (
-        <div className={classes.root}>
+        <div className={classes.root} id={id}>
             <List dense>{children}</List>
         </div>
     );
 }
+
+MessageList.defaultProps = {
+    id: undefined,
+};
 
 MessageList.propTypes = {
     children: PropTypes.oneOfType([PropTypes.node, PropTypes.array]).isRequired,

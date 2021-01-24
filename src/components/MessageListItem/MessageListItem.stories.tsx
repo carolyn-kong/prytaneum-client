@@ -1,9 +1,6 @@
 import React from 'react';
-import { ThemeProvider } from '@material-ui/core';
-import { MemoryRouter, Route } from 'react-router-dom';
 
 import Component from './MessageListItem';
-import theme from 'theme';
 
 export default {
     title: 'Components/MessageListItem',
@@ -12,24 +9,28 @@ export default {
 
 export function MessageListItemDisplay() {
     return (
-            <Component button={true}  hidden={false}>
+        <ul>
+            <Component button hidden={false}>
                 <h1>item 1</h1>
                 <h2>item 2</h2>
                 <em>item 3</em>
                 <i>item 4</i>
                 <p>This is clickable but doesnt do anything</p>
             </Component>
+        </ul>
     );
 }
 
-export function MessageListItem_noButton() {
+export function MessageListItemNoButton() {
     return (
-            <Component button={false}  hidden={false}>
+        <ul>
+            <Component button={false} hidden={false}>
                 <h1>item 1</h1>
                 <h2>item 2</h2>
                 <em>item 3</em>
                 <i>item 4</i>
                 <p>You cannot click this</p>
             </Component>
+        </ul>
     );
 }

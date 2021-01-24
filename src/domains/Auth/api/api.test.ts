@@ -20,39 +20,22 @@ describe('#login', () => {
             errors.fieldError()
         );
         expect(axios.post).not.toHaveBeenCalled();
-        await expect(API.login('username', '')).rejects.toThrow(
+        await expect(API.login('email', '')).rejects.toThrow(
             errors.fieldError()
         );
         expect(axios.post).not.toHaveBeenCalled();
     });
-    it('should accept a username and password pair', async () => {
+    it('should accept a email and password pair', async () => {
         const resolvedValue = { status: 200 };
         (axios as jest.Mocked<typeof axios>).post.mockResolvedValue(
             resolvedValue
         );
-        await expect(API.login('username', 'password')).resolves.toBe(
+        await expect(API.login('email', 'password')).resolves.toBe(
             resolvedValue
         );
         expect(axios.post).toHaveBeenCalledWith('/api/users/login', {
-            username: 'username',
+            email: 'email',
             password: 'password',
-        });
-    });
-});
-
-describe('#loginTemp', () => {
-    it('should reject blank username', async () => {
-        await expect(API.loginTemp('')).rejects.toThrow(errors.fieldError());
-        expect(axios.post).not.toHaveBeenCalled();
-    });
-    it('should accept a username', async () => {
-        const resolvedValue = { status: 200 };
-        (axios as jest.Mocked<typeof axios>).post.mockResolvedValue(
-            resolvedValue
-        );
-        await expect(API.loginTemp('username')).resolves.toBe(resolvedValue);
-        expect(axios.post).toHaveBeenCalledWith('/api/users/login-temporary', {
-            username: 'username',
         });
     });
 });
@@ -80,7 +63,7 @@ describe('#forgotPassReset', () => {
     });
     it('should reject a falsy token', async () => {
         await expect(
-            API.forgotPassReset(null, { password: '', confirmPassword: '' })
+            API.forgotPassReset('', { password: '', confirmPassword: '' })
         ).rejects.toThrow(errors.fieldError());
         expect(axios.post).not.toHaveBeenCalled();
     });
@@ -98,10 +81,9 @@ describe('#forgotPassReset', () => {
             resolvedValue
         );
         expect(axios.post).toHaveBeenCalledWith(
-            '/api/users/consume-password-reset-token',
+            `/api/users/reset-password/${token}`,
             {
-                token,
-                form,
+                ...form,
             }
         );
     });
@@ -138,38 +120,26 @@ describe('#forgotPassRequest', () => {
         await expect(
             API.forgotPassRequest({ email: 'a.b.c.d@email.com' })
         ).resolves.toBe(resolvedValue);
-        expect(axios.post).toHaveBeenCalledWith(
-            '/api/users/request-password-reset',
-            {
-                form: { email: 'a.b.c.d@email.com' },
-            }
-        );
+        expect(axios.post).toHaveBeenCalledWith('/api/users/forgot-password', {
+            email: 'a.b.c.d@email.com',
+        });
         await expect(
             API.forgotPassRequest({ email: 'user@example.com' })
         ).resolves.toBe(resolvedValue);
-        expect(axios.post).toHaveBeenCalledWith(
-            '/api/users/request-password-reset',
-            {
-                form: { email: 'user@example.com' },
-            }
-        );
+        expect(axios.post).toHaveBeenCalledWith('/api/users/forgot-password', {
+            email: 'user@example.com',
+        });
         await expect(
             API.forgotPassRequest({ email: 'mysite@you.me.net' })
         ).resolves.toBe(resolvedValue);
-        expect(axios.post).toHaveBeenCalledWith(
-            '/api/users/request-password-reset',
-            {
-                form: { email: 'mysite@you.me.net' },
-            }
-        );
+        expect(axios.post).toHaveBeenCalledWith('/api/users/forgot-password', {
+            email: 'mysite@you.me.net',
+        });
         await expect(
             API.forgotPassRequest({ email: 'my.own.site@ourearth.org' })
         ).resolves.toBe(resolvedValue);
-        expect(axios.post).toHaveBeenCalledWith(
-            '/api/users/request-password-reset',
-            {
-                form: { email: 'my.own.site@ourearth.org' },
-            }
-        );
+        expect(axios.post).toHaveBeenCalledWith('/api/users/forgot-password', {
+            email: 'my.own.site@ourearth.org',
+        });
     });
 });

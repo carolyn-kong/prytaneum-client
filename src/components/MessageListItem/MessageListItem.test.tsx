@@ -1,10 +1,8 @@
-import React, { Children } from 'react';
+import React from 'react';
 import { render, unmountComponentAtNode } from 'react-dom';
 import ReactTestUtils from 'react-dom/test-utils';
-import { MemoryRouter, Route } from 'react-router-dom';
-import { ThemeProvider } from '@material-ui/core/styles';
+import ThemeProvider from 'contexts/Theme';
 
-import theme from 'theme';
 import MessageListItem from './MessageListItem';
 
 describe('MessageListItem', function () {
@@ -40,14 +38,15 @@ describe('MessageListItem', function () {
         const hidden = false;
         ReactTestUtils.act(() => {
             render(
-                <ThemeProvider theme={theme}>
+                <ThemeProvider>
                     <div id='test'>
                         <MessageListItem
                             button={button}
                             onClick={onClick}
-                            children={children}
                             hidden={hidden}
-                        />
+                        >
+                            {children}
+                        </MessageListItem>
                     </div>
                 </ThemeProvider>,
                 container

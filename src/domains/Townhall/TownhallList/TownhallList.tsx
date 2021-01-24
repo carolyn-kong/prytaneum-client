@@ -1,71 +1,144 @@
 import React from 'react';
+import {
+    Typography,
+    List,
+    ListItem,
+    ListItemText,
+    ListItemAvatar,
+    Avatar,
+    ListItemSecondaryAction,
+    Card,
+    CardContent,
+    CardHeader,
+} from '@material-ui/core';
+import ChevronRight from '@material-ui/icons/ChevronRight';
+import { makeStyles } from '@material-ui/core/styles';
+import type { Townhall } from 'prytaneum-typings';
 
+import { formatDate } from 'utils/format';
 import useEndpoint from 'hooks/useEndpoint';
 import Loader from 'components/Loader';
-import SectionList, { Section, Datum } from 'components/SectionList';
-import { formatDate } from 'utils/format';
-
+import ListFilter from 'components/ListFilter';
 import { getTownhallList } from '../api';
-import { Townhall } from '../types';
+import {
+    filters as filterFuncs,
+    TonwhallFilterFunc,
+    search,
+    applyFilters,
+} from './utils';
 
-function formatSections(list: Townhall[]): Section[] {
-    interface Intermediate {
-        [index: string]: Datum[];
-    }
-    const intermediateVal: Intermediate = list.reduce<Intermediate>(
-        (accum, townhall) => {
-            const formattedDate = formatDate(new Date(townhall.date), 'P');
-            const copy = { ...accum };
-            const datum: Datum = {
-                image: townhall.picture,
-                title: townhall.speaker.name,
-                subtitle: `${townhall.speaker.party}, ${townhall.speaker.territory}`,
-            };
-            if (copy[formattedDate] !== undefined) {
-                copy[formattedDate].push(datum);
-            } else {
-                copy[formattedDate] = [datum];
-            }
-            return copy;
-        },
-        {}
-    );
-    return Object.keys(intermediateVal).map((key) => {
-        const datums: Datum[] = intermediateVal[key];
-        return { title: key, sectionData: datums };
-    });
+const useStyles = makeStyles((theme) => ({
+    root: {
+        width: '100%',
+        height: '100%',
+        padding: theme.spacing(0, 0, 2, 0),
+    },
+    card: {
+        width: '100%',
+        paddingBottom: theme.spacing(3),
+    },
+    title: {
+        paddingBottom: 0,
+        marginBottom: 0,
+    },
+}));
+
+interface Props {
+    onClickTownhall: (id: string) => void;
+    title?: string;
 }
 
-export default function TownhallList() {
+export default function TownhallList({ onClickTownhall, title }: Props) {
+    const classes = useStyles();
     const [list, setList] = React.useState<Townhall[] | null>(null);
-    // const isMounted = React.useRef(true);
-    // const renderCount = React.useRef(0);
-    const [sendRequest, isLoading] = useEndpoint(getTownhallList, {
-        onSuccess: (results) => {
-            // if (isMounted.current) {
-            setList(results.data.list);
-            // }
-        },
-    });
 
-    React.useEffect(sendRequest, []);
-    if (isLoading || !list) {
-        return <Loader />;
+    // search is always the first element in the filter array
+    const [filters, setFilters] = React.useState<TonwhallFilterFunc[]>([
+        (townhalls: Townhall[]) => townhalls,
+    ]);
+    const [, isLoading] = useEndpoint(() => getTownhallList(), {
+        onSuccess: (results) => {
+            setList(results.data);
+        },
+        runOnFirstRender: true,
+    });
+    const filteredResults = React.useMemo(
+        () => applyFilters(list || [], filters),
+        [list, filters]
+    );
+
+    const handleSearch = React.useCallback(
+        (text: string) =>
+            // eslint-disable-next-line @typescript-eslint/no-unused-vars
+            setFilters(([_prevSearch, ...otherFilters]) => [
+                (filteredList) => search(text, filteredList),
+                ...otherFilters,
+            ]),
+        []
+    );
+
+    if (isLoading || !list) return <Loader />;
+
+    if (list.length === 0) {
+        return (
+            <div style={{ width: '100%', height: '100%' }}>
+                <Typography variant='h4'>No Townhalls to display</Typography>
+            </div>
+        );
     }
 
-    // React.useEffect(() => {
-    //     renderCount.current += 1;
-    // });
+    return (
+        <div className={classes.root}>
+            <Card raised className={classes.card}>
+                {title && (
+                    <CardHeader title={title} className={classes.title} />
+                )}
+                <CardContent>
+                    <ListFilter
+                        filterMap={filterFuncs}
+                        onSearch={handleSearch}
+                        onFilterChange={(newFilters) =>
+                            setFilters(([searchFunc]) => [
+                                searchFunc,
+                                ...newFilters,
+                            ])
+                        }
+                        length={filteredResults.length}
+                    />
 
-    // React.useEffect(() => {
-    //     isMounted.current = true;
-    //     sendRequest();
-    //     return () => {
-    //         isMounted.current = false;
-    //     };
-    // }, [sendRequest]);
-    // if (renderCount.current < 1 || isLoading) {
-    //     return <Loader />;
-    // }
-    return <SectionList sections={formatSections(list)} />;
+                    <List>
+                        {filteredResults.map(({ form, _id }) => (
+                            <ListItem
+                                key={_id}
+                                divider
+                                button
+                                alignItems='flex-start'
+                                onClick={() => onClickTownhall(_id)}
+                            >
+                                <ListItemAvatar>
+                                    <Avatar
+                                        alt='Speaker'
+                                        src='' // FIXME:
+                                    >
+                                        {form.title[0]}
+                                    </Avatar>
+                                </ListItemAvatar>
+                                <ListItemText
+                                    primary={form.title}
+                                    secondary={formatDate(form.date)}
+                                />
+                                <ListItemSecondaryAction>
+                                    <ChevronRight />
+                                </ListItemSecondaryAction>
+                            </ListItem>
+                        ))}
+                    </List>
+                </CardContent>
+            </Card>
+        </div>
+    );
 }
+
+TownhallList.defaultProps = {
+    title: '',
+};

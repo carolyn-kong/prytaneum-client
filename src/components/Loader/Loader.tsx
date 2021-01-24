@@ -1,6 +1,6 @@
 import React from 'react';
-import Grid from '@material-ui/core/Grid';
 import CircularProgress from '@material-ui/core/CircularProgress';
+import Grid from '@material-ui/core/Grid';
 import { makeStyles } from '@material-ui/core/styles';
 
 const useStyles = makeStyles({
@@ -9,27 +9,31 @@ const useStyles = makeStyles({
         height: '100%',
     },
     loader: {
-        position: 'absolute',
+        flex: 1,
+        display: 'flex',
     },
 });
 
-/** generic Loader that displays in the center vertically and horizontally of its parent component
+/**
+ * @description generic Loader that displays in the center vertically and horizontally of its parent component
+ * requires that the parent component have a height
  * @category Component
  * @constructor Loader
  */
 const Loader = () => {
     const classes = useStyles();
     return (
-        <div className={classes.root}>
+        <Grid container justify='center' className={classes.root}>
             <Grid
+                item
+                xs={12}
                 container
-                style={{ height: '100%' }}
-                alignItems='center'
-                justify='center'
+                direction='column'
+                alignContent='center'
             >
                 <CircularProgress className={classes.loader} />
             </Grid>
-        </div>
+        </Grid>
     );
 };
 
