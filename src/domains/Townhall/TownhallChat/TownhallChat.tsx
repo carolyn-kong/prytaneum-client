@@ -9,11 +9,12 @@ import useUser from 'hooks/useUser';
 import Chat from 'components/Chat';
 import Loader from 'components/Loader';
 import ChatMessage from 'components/ChatMessage';
+import StarIcon from '@material-ui/icons/Star';
 import { createChatMessage, getChatmessages } from '../api';
 import { chatReducer } from './utils';
 
 export default function TownhallChat() {
-    const [townhall] = useTownhall();
+    const [townhall, isModerator] = useTownhall();
     const messageRef = React.useRef<ChatMessageForm>();
     const [messages, dispatchMessage] = React.useReducer(chatReducer, []);
     const [user] = useUser();
@@ -52,7 +53,7 @@ export default function TownhallChat() {
                     animate={{ y: 0, opacity: 1 }}
                     transition={{ type: 'keyframes' }}
                 >
-                    <ChatMessage name={meta.createdBy.name.first} timestamp={meta.createdAt} message={message} />
+                    <ChatMessage name={meta.createdBy.name.first} timestamp={meta.createdAt} message={message} icon={message.isModerator ? <StarIcon /> : undefined} />
                 </motion.li>
             ))}
         </Chat>

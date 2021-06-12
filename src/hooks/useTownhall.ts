@@ -16,7 +16,7 @@ export default function useTownhall() {
         () => user && townhall.meta.createdBy._id === user._id,
         [user, townhall]
     );
-    const isModerator = React.useMemo(
+    const isCurrentUserModerator = React.useMemo(
         () =>
             Boolean(
                 (user &&
@@ -27,5 +27,4 @@ export default function useTownhall() {
             ),
         [townhall, user, isOwner]
     );
-    return [townhall, isModerator] as const;
 }
