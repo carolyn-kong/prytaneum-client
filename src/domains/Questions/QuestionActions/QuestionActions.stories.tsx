@@ -2,7 +2,7 @@
 import React from 'react';
 import { Meta, Story } from '@storybook/react';
 import { CardActions } from '@material-ui/core';
-import { makeQuestion } from 'prytaneum-typings';
+import { makeQuestion, makeTownhall, makeUser } from 'prytaneum-typings';
 
 import TownhallProvider from 'contexts/Townhall';
 import UserProvider from 'contexts/User';
@@ -10,6 +10,7 @@ import LikeAction from './Like';
 import QuoteAction from './Quote';
 import ReplyAction from './Reply';
 import Suggest from './Suggest';
+import QueueButton from './QueueButton';
 import QuestionCard from '../QuestionCard';
 
 export default {
@@ -17,8 +18,8 @@ export default {
     parameters: { layout: 'centered' },
     decorators: [
         (MyStory) => (
-            <TownhallProvider townhallId='123'>
-                <UserProvider>
+            <TownhallProvider value={makeTownhall()} forceNoFetch townhallId='123'>
+                <UserProvider value={makeUser()} forceNoLogin>
                     <MyStory />
                 </UserProvider>
             </TownhallProvider>
@@ -39,6 +40,7 @@ const Template: Story<Props> = ({ suggested, onLike, onDeleteLike, liked }) => (
         <LikeAction townhallId='123' questionId='123' onLike={onLike} liked={liked} onDeleteLike={onDeleteLike} />
         <QuoteAction question={makeQuestion()} />
         <ReplyAction question={makeQuestion()} />
+        <QueueButton isQueued={false} questionId={makeQuestion()._id} townhallId='123' />
     </>
 );
 

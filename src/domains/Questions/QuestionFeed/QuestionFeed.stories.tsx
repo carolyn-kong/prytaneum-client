@@ -1,15 +1,15 @@
 import React from 'react';
 import { Meta } from '@storybook/react';
 import { EventEmitter } from 'events';
-import { makeQuestion } from 'prytaneum-typings';
+import { makeQuestion, makeUser, makeTownhall } from 'prytaneum-typings';
 import { Grid } from '@material-ui/core';
 
 import UserProvider from 'contexts/User';
 import FixtureSocket from 'mock/Fixture.socket';
 import TownhallProvider from 'contexts/Townhall';
-import QuestionFeed from '.';
-import QuestionCard from '../QuestionCard';
-import { CurrentQuestion as CurrentQuestionWrapper } from './components';
+import QuestionFeed from './QuestionFeed';
+
+export { QuestionFeedLoading as Loading } from './QuestionFeed';
 
 const emitter = (new EventEmitter() as unknown) as SocketIOClient.Socket;
 
@@ -28,8 +28,8 @@ export default {
     decorators: [
         (MyStory) => (
             <div style={{ flex: 1, padding: 60 }}>
-                <UserProvider>
-                    <TownhallProvider townhallId='123'>
+                <UserProvider value={makeUser()} forceNoLogin>
+                    <TownhallProvider townhallId='123' value={makeTownhall()} forceNoFetch>
                         <FixtureSocket.Provider value={emitter}>
                             <MyStory />
                         </FixtureSocket.Provider>
@@ -40,7 +40,7 @@ export default {
     ],
 } as Meta;
 
-export function Basic() {
+export function AsyncInteractive() {
     return (
         <Grid container direction='column' wrap='nowrap'>
             <div style={{ flex: 1 }}>
@@ -52,13 +52,5 @@ export function Basic() {
                 <QuestionFeed />
             </div>
         </Grid>
-    );
-}
-
-export function CurrentQuestion() {
-    return (
-        <CurrentQuestionWrapper>
-            <QuestionCard question={makeQuestion()} />
-        </CurrentQuestionWrapper>
     );
 }
